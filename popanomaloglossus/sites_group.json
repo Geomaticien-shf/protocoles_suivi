@@ -1,0 +1,47 @@
+{
+  "genre":"M",
+  "label": "Transect",
+  "label_list": "Transects",
+  "map_label_field_name": "base_site_name",
+  "display_properties": [
+    "sites_group_name",
+    "comments"
+  ],
+  "display_list": [
+    "sites_group_name",
+    "nb_sites"
+  ],
+  "specific": {
+      "comments": {
+          "type_widget": "textarea",
+          "attribut_label": "Commentaire",
+	  "required": false
+       },
+       "sites_group_name": {
+        "type_widget": "text",
+        "attribut_label": "Nom du transect",
+        "required": true,
+        "definition": "Veuillez privilégier la nomenclature suivante : 'trX' où 'X' est le nom de la crique, suivi du nom de la zone géographique (exemple : 'trCriqueBlanci_Tresor')"
+        },
+      "sites_group_code": {
+        "type_widget": "text",
+        "attribut_label": "Code",
+        "required": false,
+        "hidden": true
+      },
+      "sites_group_description": {
+        "type_widget": "textarea",
+        "attribut_label": "Description",
+        "hidden":true
+      },
+      "nb_visits": {
+        "attribut_label": "Nombre de passages"
+      },
+      "nb_sites": {
+        "attribut_label": "Nombre de sous-transects"
+      },
+      "modules": {
+        "hidden": true
+      }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "description_field_name":"cd_nom",
+  "label": "observation ou une absence",
+  "label_list": "Observations ou absences",
+  "genre":"F",
+  "display_properties": [
+    "cd_nom",
+    "count",
+    "id_nomenclature_stade",
+    "id_nomenclature_sex",
+    "comments"
+  ],
+  "display_list": [
+    "cd_nom",
+    "count"
+  ],
+  "specific": {
+    "cd_nom": {
+      "type_widget": "text",
+      "attribut_label": "Nom espèce (latin)",
+      "type_util": "taxonomy",
+      "value": 888501,
+      "hidden": true
+    } ,
+    "id_nomenclature_stade": {
+      "type_widget": "datalist",
+      "attribut_label": "Stade de vie (Cette information optionnelle ne sera pas analysée dans le cadre des suivis POP)",
+      "api": "nomenclatures/nomenclature/STADE_VIE",
+      "application": "GeoNature",
+      "keyValue": "id_nomenclature",
+      "keyLabel": "label_fr",
+      "data_path": "values",
+      "type_util": "nomenclature",
+      "required": false,
+      "hidden":"({value}) => value.count === 0",
+      "filters": {
+          "cd_nomenclature": ["1", "2", "3", "5", "8", "9"]
+      },
+      "default": {
+        "cd_nomenclature": "1"
+      }
+    },
+    "id_nomenclature_sex": {
+      "type_widget": "datalist",
+      "attribut_label": "Sexe (Cette information optionnelle ne sera pas analysée dans le cadre des suivis POP)",
+      "api": "nomenclatures/nomenclature/SEXE",
+      "application": "GeoNature",
+      "keyValue": "id_nomenclature",
+      "keyLabel": "label_fr",
+      "data_path": "values",
+      "type_util": "nomenclature",
+      "required": false,
+      "hidden":"({value}) => value.count === 0",
+      "filters": {
+          "cd_nomenclature": ["1", "2", "3", "5"]
+      },
+      "default": {
+        "cd_nomenclature": "1"
+      }
+    },
+    "count": {
+      "type_widget": "number",
+      "attribut_label": "Nombre d'Anomaloglossus blanci",
+      "required": true,
+      "hidden":false,
+      "min": 0
+    },
+    "comments": {
+      "type_widget": "textarea",
+      "attribut_label": "Commentaire"
+    }
+  }
+}
