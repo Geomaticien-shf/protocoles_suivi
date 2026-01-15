@@ -1,0 +1,67 @@
+{
+  "genre":"M",
+  "geometry_type": "LineString",
+  "label": "Sous-transect",
+  "label_list": "Sous-transects",
+  "map_label_field_name": "base_site_name",
+  "display_properties": [
+    "base_site_name",
+    "id_sites_group",
+    "base_site_description"
+  ],
+  "display_list": [
+    "base_site_name",
+    "last_visit",
+    "nb_visits"
+  ],
+  "specific": {
+    "id_nomenclature_type_site": {
+      "type_widget": "text",
+      "attribut_label": "Type site",
+      "type_util": "nomenclature",
+      "value": {
+          "code_nomenclature_type": "TYPE_SITE",
+          "cd_nomenclature": "POPA_S_AB"
+      },
+      "hidden": true
+    },
+    "base_site_name": {
+        "type_widget": "text",
+        "attribut_label": "Nom du sous-transect",
+	"definition": "Numéro de 1 à 10",
+        "required": true
+    },
+    "base_site_code": {
+      "type_widget": "text",
+      "attribut_label": "Code du sous-transect",
+      "required": false,
+      "hidden": true
+    },
+    "base_site_description": {
+      "type_widget": "textarea",
+      "attribut_label": "Commentaire"
+    },
+    "id_sites_group": {
+        "type_widget": "datalist",
+        "attribut_label": "transect",
+        "type_util": "sites_group",
+        "keyValue": "id_sites_group",
+        "keyLabel": "sites_group_name",
+        "api": "__MONITORINGS_PATH/list/__MODULE.MODULE_CODE/sites_group?id_module=__MODULE.ID_MODULE",
+        "application": "GeoNature",
+        "required": false,
+        "hidden": true
+      },
+    "id_inventor": {
+        "required": false,
+        "hidden": true
+     },
+      "nb_visits": {
+        "attribut_label": "Nb. de passages"
+      },
+      "last_visit": {
+        "attribut_label": "Dernier passage",
+        "type_util": "date"
+      }
+  }
+}

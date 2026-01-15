@@ -1,0 +1,95 @@
+{
+  "genre":"M",
+  "label": "Passage",
+  "label_list": "Passages",
+  "display_properties": [
+    "id_dataset",
+    "observers",
+    "expertise",
+    "nb_observers",
+    "visit_date_min",
+    "num_passage",
+    "heure_debut",
+    "pluie",
+    "eau",
+    "comments"
+  ],
+  "display_list": [
+    "num_passage",
+    "visit_date_min",
+    "observers",
+    "nb_observers",
+    "pluie",
+    "eau",
+    "nb_observations"
+  ],
+  "keep": [
+    "id_dataset",
+    "observers",
+    "expertise"
+  ],
+  "specific": {
+    "id_base_site": {
+      "type_widget": "site",
+      "required": false,
+      "attribut_label": "Sous-transect"
+    },
+    "expertise": {
+      "type_widget": "select",
+      "required": true,
+      "attribut_label": "Expertise",
+      "definition": "Expertise de l'observateur principal.",
+      "values": ["Débutant", "Assez expérimenté", "Chevronné"]
+   },
+    "visit_date_min": {
+      "type_widget": "date",
+      "attribut_label": "Date du passage",
+      "required": true
+    },
+    "num_passage": {
+      "type_widget": "number",
+      "attribut_label": "Numéro de passage",
+      "definition": "Usuellement entre 1 et 3. Si plus de passages sont renseignés, une sélection sera opérée.",
+      "required": true,
+      "min": 1,
+      "max": 10,
+      "default": 1
+    },
+    "nb_observers": {
+      "type_widget": "number",
+      "attribut_label": "Nombre d'observateurs",
+      "required": true,
+      "min": 1,
+      "max": 20,
+      "default": 1
+    },
+    "pluie": {
+       "type_widget": "radio",
+       "required": true,
+       "attribut_label": "Pluie",
+       "definition": "Pluie pendant le passage sur ce sous-transect ?",
+       "values": ["Oui", "Non"],
+       "default": "Non"
+    },
+    "eau": {
+       "type_widget": "radio",
+       "required": true,
+       "attribut_label": "Eau dans la crique",
+       "definition": "Eau dans la crique pendant le passage sur ce sous-transect ?",
+       "values": ["Oui", "Non"],
+       "default": "Non"
+    },
+    "heure_debut": {
+      "type_widget": "time",
+      "attribut_label": "Heure de début",
+      "required": true
+    },
+    "comments": {
+      "type_widget": "textarea",
+      "attribut_label": "Commentaire"
+    },
+    "nb_observations": {
+      "attribut_label": "Nb. d'observations"
+    }
+  }
+}

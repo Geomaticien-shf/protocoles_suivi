@@ -1,0 +1,17 @@
+{
+    "module_label":"popanomaloglossus",
+    "module_desc":"Module de suivi du Protocole POPAmphibien spécifique Anomaloglossus blanci - Guyane",
+    "id_list_taxonomy": {
+      "required": false
+    },
+    "b_draw_sites_group": true,
+    "genre":"M",
+    "color":"#e1fffe",
+    "export_csv": [
+      { "label": "Observations CSV", "type":"csv" , "method": "observation" }
+    ],
+    "display_properties": [
+      "module_label",
+      "module_desc"
+    ]
+}

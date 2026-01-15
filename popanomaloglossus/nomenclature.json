@@ -1,0 +1,11 @@
+{
+  "nomenclatures": [
+    {
+      "type":"TYPE_SITE",
+      "cd_nomenclature": "POPA_S_AB",
+      "mnemonique": "Site POPA Anomaloglossus blanci",
+      "label_default": "Site POPAmphibien spécifique Anomaloglossus blanci",
+      "definition_default": "Site POPAmphibien spécifique Anomaloglossus blanci"
+    }
+  ]
+}
