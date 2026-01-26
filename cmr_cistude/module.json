@@ -1,0 +1,16 @@
+{
+    "module_label":"cmr_cistude",
+    "module_desc":"Module de suivi CMR de la Cistude d'Europe",
+    "specific": {
+      "cd_nom": {
+        "type_widget": "taxonomy",
+	"attribut_label": "Espèce",
+	"type_util": "taxonomy",
+	"required": true
+      },
+      "id_list_taxonomy": {
+	  "required": false,
+          "hidden": true
+      }
+    }
+}

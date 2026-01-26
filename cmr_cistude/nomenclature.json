@@ -1,0 +1,13 @@
+{
+  "types": [
+  ],
+  "nomenclatures": [
+  {
+      "type":"TYPE_SITE",
+      "cd_nomenclature": "CMR_Cistude",
+      "mnemonique": "CMR Cistude",
+      "label_default": "Type de site pour le suivi CMR Cistude",
+      "definition_default": "Type de site pour le suivi CMR de la Cistude d'Europe"
+    }
+  ]
+}

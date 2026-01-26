@@ -1,0 +1,31 @@
+{
+  "display_properties": [
+    "visit_date_min",
+    "observers",
+    "id_dataset",
+    "comments",
+    "nb_observations"
+  ],
+  "display_list": [
+    "visit_date_min",
+    "observers",
+    "nb_observations"
+  ],
+  "specific": {
+    "id_base_site": {
+      "type_widget": "site",
+      "required": true,
+      "attribut_label": "Choix du site"
+    },
+    "visit_date_min": {
+      "type_widget": "date",
+      "attribut_label": "Date de l'observation",
+      "required": true
+    },
+    "comments": {
+      "type_widget": "textarea",
+      "attribut_label": "Commentaire",
+      "required": false
+    }
+  }
+}
