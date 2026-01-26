@@ -1,0 +1,70 @@
+{
+    "id_field_name": "id_marking",
+    "description_field_name": "id_marking",
+    "chained": true,
+    "label": "Marquage",
+    "genre": "M",
+    "display_properties": [
+	"marking_date",
+        "id_operator",
+        "id_nomenclature_marking_type",
+        "marking_code",
+        "marking_location",
+        "marking_details"
+    ],
+    "display_list": [
+        "id_operator",
+        "id_nomenclature_marking_type",
+        "marking_code",
+        "marking_location",
+        "marking_details"
+    ],
+    "specific": {
+        "marking_date": {
+            "type_widget": "date",
+            "attribut_label": "Date de marquage",
+            "required": true
+        },
+        "id_operator": {
+            "type_widget": "datalist",
+            "attribut_label": "Opérateur",
+            "api": "users/menu/__MODULE.ID_LIST_OBSERVER",
+            "application": "GeoNature",
+            "keyValue": "id_role",
+            "keyLabel": "nom_complet",
+            "type_util": "user",
+            "required": true
+        },
+        "id_base_marking_site": {
+	    "required": false,
+	    "hidden": true
+        },
+        "id_nomenclature_marking_type": {
+	    "type_widget": "datalist",
+	    "attribut_label": "Type de marquage",
+	    "api": "nomenclatures/nomenclature/TYP_MARQUAGE",
+	    "application": "GeoNature",
+	    "keyValue": "id_nomenclature",
+	    "keyLabel": "mnemonique",
+	    "data_path": "values",
+	    "type_util": "nomenclature",
+	    "required": true,
+	    "hidden": false,
+	    "filters": {
+		"cd_nomenclature": ["1", "3", "4", "5"]
+	    }
+        },
+        "marking_location": {
+            "type_widget": "text",
+            "attribut_label": "Localisation du marquage"
+        },
+        "marking_code": {
+            "type_widget": "text",
+            "attribut_label": "Code du marquage"
+        },
+        "marking_details": {
+            "type_widget": "textarea",
+            "attribut_label": "Détails du marquage"
+        }
+    }
+}

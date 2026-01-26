@@ -1,0 +1,84 @@
+{
+  "label": "capture ou recapture",
+  "label_list": "captures et recaptures",
+  "genre":"F",
+  "display_properties": [
+    "capture",
+    "cd_nom",
+    "id_individual",
+    "individual_name",
+    "id_nomenclature_stade"
+  ],
+  "display_list": [
+    "cd_nom",
+    "id_individual",
+    "individual_name",
+    "id_nomenclature_stade"
+  ],
+  "specific": {
+    "cd_nom": {
+       "type_widget": "text",
+       "required": false,
+       "hidden": true
+    },
+    "id_individual": {
+      "type_widget": "individuals",
+      "attribut_label": "Choix de l'individu",
+      "id_module": "__MODULE.ID_MODULE",
+      "id_list": "__MODULE.ID_LIST_TAXONOMY",
+      "cd_nom": "__MODULE.CD_NOM",
+      "required": true,
+      "hidden": false
+    },
+    "id_nomenclature_stade": {
+      "type_widget": "datalist",
+      "attribut_label": "Stade de vie",
+      "api": "nomenclatures/nomenclature/STADE_VIE",
+      "application": "GeoNature",
+      "keyValue": "id_nomenclature",
+      "keyLabel": "label_fr",
+      "data_path": "values",
+      "type_util": "nomenclature",
+      "required": false,
+      "hidden": false,
+      "filters": {
+          "cd_nomenclature": ["1", "2", "3", "5"]
+      },
+      "default": {
+        "cd_nomenclature": "1"
+      }
+    },
+    "capture": {
+      "type_widget": "select",
+      "required": true,
+      "attribut_label": "Méthode de capture",
+      "values": ["Nasse", "Manuelle / épuisette", "Verveux"]
+    },
+    "mesures": {
+       "type_widget": "radio",
+       "required": true,
+       "attribut_label": "Avez-vous pris les mesures biométriques de l'individu ?",
+       "values": ["Oui", "Non"],
+       "value": "Non"
+    },
+    "poids": {
+      "type_widget": "number",
+      "attribut_label": "Poids mesuré (g)",
+      "required": false,
+      "hidden":"({value}) => value.mesures === 'Non'",
+      "min": 0
+    },
+    "plastron": {
+      "type_widget": "number",
+      "attribut_label": "Longueur du plastron (mm)",
+      "required": false,
+      "hidden":"({value}) => value.mesures === 'Non'",
+      "min": 0
+    },
+    "comments": {
+      "type_widget": "textarea",
+      "required": false,
+      "attribut_label": "Commentaire (y inscrire tout signe particulier observé sur l'individu)"
+    }
+  }
+}

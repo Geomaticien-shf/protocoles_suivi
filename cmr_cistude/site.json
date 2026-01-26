@@ -1,0 +1,54 @@
+{
+  "genre":"M",
+  "geometry_type": "Polygon",
+  "label": "Site",
+  "label_list": "Sites",
+  "map_label_field_name": "base_site_name",
+  "display_properties": [
+    "base_site_name",
+    "base_site_description",
+    "cd_hab",
+    "id_inventor",
+    "first_use_date",
+    "last_visit",
+    "nb_visits"
+  ],
+  "display_list": [
+    "base_site_name",
+    "last_visit",
+    "nb_visits"
+  ],
+  "specific": {
+    "base_site_code": {
+      "required": false,
+      "hidden": true
+    },
+    "id_nomenclature_type_site": {
+      "type_widget": "text",
+      "attribut_label": "Type site",
+      "type_util": "nomenclature",
+      "value": {
+          "code_nomenclature_type": "TYPE_SITE",
+          "cd_nomenclature": "CMR_Cistude"
+      },
+      "hidden": true
+    },
+    "cd_hab": {
+      "type_widget": "datalist",
+      "attribut_label": "Habitat",
+      "api": "habref/habitats/autocomplete",
+      "application": "GeoNature",
+      "keyValue": "cd_hab",
+      "keyLabel": "search_name",
+      "type_util": "habitat",
+      "params": {
+          "cd_typo": 7,
+	  "limit": 10000,
+	  "search_name": ""
+      },
+      "filters": {
+	      "cd_hab": [80, 88, 592, 609, 594, 595, 597, 599, 605, 606, 614, 623, 628, 629, 636, 638, 639, 646, 656, 1779, 1786, 1788, 1790, 1791, 1840, 1841, 1843, 1844, 1845]
+      }
+    }
+  }
+}
