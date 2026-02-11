@@ -49,7 +49,7 @@ AS WITH obs AS (
           WHERE com_dep.row_num = 1
         ), num_passages_calc AS (
          SELECT t_base_visits.id_base_visit,
-	row_number() OVER (PARTITION BY t_base_visits.id_base_site, (date_part('year'::text, t_base_visits.visit_date_min), t_visit_complements.data ->> 'heure_debut'::text) ORDER BY t_base_visits.visit_date_min, (t_visit_complements.data ->> 'heure_debut'::text)) AS num_passage_calc
+	row_number() OVER (PARTITION BY t_base_visits.id_base_site, date_part('year'::text, t_base_visits.visit_date_min) ORDER BY t_base_visits.visit_date_min, (t_visit_complements.data ->> 'heure_debut'::text)) AS num_passage_calc
         FROM gn_monitoring.t_base_visits
         LEFT JOIN gn_monitoring.t_visit_complements USING (id_base_visit)
         )
