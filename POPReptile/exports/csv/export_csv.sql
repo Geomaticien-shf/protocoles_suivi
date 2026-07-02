@@ -263,3 +263,181 @@ LEFT JOIN info_sites i USING (id_base_site)
 LEFT JOIN obs USING (id_base_visit)
 WHERE m.module_code = :module_code
 ORDER BY v.id_dataset, tsg.sites_group_name, s.base_site_name, visit_date_min;
+
+
+--------------------------------------------------POPReptile erreurs------------------------------------------
+DROP VIEW IF EXISTS gn_monitoring.v_export_popreptile_erreurs;
+
+CREATE OR REPLACE VIEW gn_monitoring.v_export_popreptile_erreurs AS
+WITH nb_sites_par_aire AS
+(SELECT DISTINCT
+	id_sites_group,
+	count(DISTINCT id_base_site) AS nb_sites
+FROM gn_monitoring.t_sites_groups tsg
+LEFT JOIN gn_monitoring.t_site_complements USING (id_sites_group)
+LEFT JOIN gn_monitoring.cor_sites_group_module USING (id_sites_group)
+LEFT JOIN gn_commons.t_modules tm USING (id_module)
+WHERE (module_code = :module_code)
+GROUP BY id_sites_group),
+nb_visits_par_site AS
+(SELECT DISTINCT
+	id_base_site, count(DISTINCT id_base_visit) AS nb_visits
+FROM gn_monitoring.t_base_sites s
+LEFT JOIN gn_monitoring.t_base_visits USING (id_base_site)
+LEFT JOIN gn_commons.t_modules tm USING (id_module)
+WHERE (module_code = :module_code)
+GROUP BY id_base_site),
+pb_num_passages AS
+(SELECT DISTINCT
+	tsg.sites_group_name AS aire_etude,
+	array_agg(CONCAT(nom_transect, '_', annee_passage, '_', num_passage) ORDER BY nom_transect, annee_passage DESC, num_passage) AS list_tr_num_pb,
+	COALESCE(tsg.id_digitiser, (tsg.DATA->>'id_inventor')::int) AS id_user
+FROM gn_monitoring.v_export_popreptile_analyses
+LEFT JOIN gn_monitoring.t_sites_groups tsg ON (uuid_aire_etude = tsg.uuid_sites_group)
+WHERE num_passage::int <> num_passage_calc::int
+GROUP BY tsg.sites_group_name, id_user),
+info_visits AS
+(SELECT DISTINCT
+	g.sites_group_name AS aire_etude,
+	s.base_site_name AS transect,
+	id_base_visit,
+	COALESCE(g.id_digitiser, (g.DATA->>'id_inventor')::int) AS id_user,
+	count(DISTINCT id_observation) AS nb_obs
+FROM gn_monitoring.t_base_visits v
+LEFT JOIN gn_meta.t_datasets td USING (id_dataset)
+LEFT JOIN gn_monitoring.t_base_sites s USING (id_base_site)
+LEFT JOIN gn_monitoring.t_site_complements tsc USING (id_base_site)
+LEFT JOIN gn_monitoring.t_sites_groups g USING (id_sites_group)
+LEFT JOIN gn_monitoring.t_visit_complements tvc USING (id_base_visit)
+LEFT JOIN gn_monitoring.t_observations t USING (id_base_visit)
+LEFT JOIN gn_commons.t_modules tm USING (id_module)
+WHERE (module_code = :module_code
+	AND (tvc.DATA->>'etat_site' <> 'Transect détruit (travaux, etc.)' OR tvc.DATA->>'etat_site' IS NULL)
+	AND tvc.DATA->>'accessibility' <> 'Non')
+GROUP BY aire_etude, transect, id_base_visit, id_user
+ORDER BY nb_obs),
+pb_visite_vide AS
+(SELECT aire_etude, id_user, array_agg(DISTINCT transect) AS trs
+FROM info_visits
+WHERE nb_obs = 0
+GROUP BY aire_etude, id_user),
+pb_visite_presence_absence AS
+(	select uuid_passage,
+	count(distinct v.presence_reptile) as abs_pres,
+	tsg.sites_group_name AS aire_etude,
+	array_agg(distinct CONCAT(nom_transect,'_', date_passage)) as details,
+	COALESCE(tsg.id_digitiser, (tsg.DATA->>'id_inventor')::int) AS id_user
+from gn_monitoring.v_export_popreptile_standard v
+LEFT JOIN gn_monitoring.t_sites_groups tsg ON (uuid_aire_etude = tsg.uuid_sites_group)
+group by uuid_passage, sites_group_name, id_digitiser, tsg.data->>'id_inventor'
+),
+taxon_pb AS
+(SELECT DISTINCT
+	tsg.sites_group_name AS aire_etude,
+	cd_nom, cd_ref,
+	array_agg(CONCAT(nom_transect, '_', annee_passage, '_', num_passage) ORDER BY nom_transect, date_passage DESC) AS list_pb,
+	COALESCE(tsg.id_digitiser, (tsg.DATA->>'id_inventor')::int) AS id_user
+FROM gn_monitoring.v_export_popreptile_standard v
+LEFT JOIN taxonomie.taxref t USING (cd_nom)
+LEFT JOIN gn_monitoring.t_sites_groups tsg ON (uuid_aire_etude = tsg.uuid_sites_group)
+WHERE cd_nom <> cd_ref or (ordre not in ('Squamata'))
+GROUP BY tsg.sites_group_name, id_user, cd_nom, cd_ref),
+errors AS
+((
+-- Aires vides, sans aucun site
+SELECT
+	'Aire vide' AS type_erreur,
+	NULL AS details_erreur,
+	'Doublon d''une autre aire, erreur de saisie aire ou oubli de saisie transects' AS risques,
+	tsg.sites_group_name AS aire_etude,
+	COALESCE(NULLIF(CONCAT(d.prenom_role, ' ', d.nom_role), ' '), CONCAT(inventor.prenom_role, ' ', inventor.nom_role)) AS nom_digitiser,
+	COALESCE(d.email, inventor.email) AS email_digitiser
+FROM nb_sites_par_aire
+LEFT JOIN gn_monitoring.t_sites_groups tsg USING (id_sites_group)
+LEFT JOIN utilisateurs.t_roles d ON (d.id_role = tsg.id_digitiser)
+LEFT JOIN utilisateurs.t_roles inventor ON (inventor.id_role = (tsg.DATA->>'id_inventor')::int)
+WHERE nb_sites = 0)
+UNION
+(
+-- Transects vides, sans aucune visite
+SELECT DISTINCT
+	'Transect vide' AS type_erreur,
+	CONCAT('Nom transect : ', s.base_site_name) AS details_erreur,
+	'Doublon d''un autre transect, erreur de saisie transect ou oubli de saisie visites' AS risques,
+	tsg.sites_group_name AS aire_etude,
+	NULLIF(CONCAT(d.prenom_role, ' ', d.nom_role), ' ') AS nom_digitiser,
+	d.email AS email_digitiser
+FROM nb_visits_par_site
+LEFT JOIN gn_monitoring.t_base_sites s USING (id_base_site)
+LEFT JOIN gn_monitoring.t_site_complements c USING (id_base_site)
+LEFT JOIN gn_monitoring.t_sites_groups tsg USING (id_sites_group)
+LEFT JOIN utilisateurs.t_roles d ON (d.id_role = s.id_digitiser)
+WHERE nb_visits = 0)
+UNION
+(
+SELECT
+	'Numéro de passage incorrect' AS type_erreur,
+	CONCAT('Transects_annee_numero concernés : ', array_to_string(list_tr_num_pb, ' | ')) AS details_erreur,
+	'Simple pb de numérotation, oubli de saisie visites, erreur date' AS risques,
+	aire_etude,
+	NULLIF(CONCAT(d.prenom_role, ' ', d.nom_role), ' ') AS nom_digitiser,
+	d.email AS email_digitiser
+FROM pb_num_passages
+LEFT JOIN utilisateurs.t_roles d ON (d.id_role = id_user)
+ORDER BY aire_etude)
+UNION
+(
+SELECT
+	'Visite vide (sans observation)' AS type_erreur,
+	CONCAT('Transects concernés : ', array_to_string(trs, ' | ')) AS details_erreur,
+	'Oubli de saisie d''observation ou d''absence, erreur de saisie de la visite' AS risques,
+	aire_etude,
+	NULLIF(CONCAT(d.prenom_role, ' ', d.nom_role), ' ') AS nom_digitiser,
+	d.email AS email_digitiser
+FROM pb_visite_vide
+LEFT JOIN utilisateurs.t_roles d ON (d.id_role = id_user)
+)
+UNION
+(
+SELECT
+	'Taxon non ciblé par le protocole' AS type_erreur,
+	CONCAT('Taxon concerné (cd_nom) : ', cd_nom, '; Passages concernés : ', array_to_string(list_pb, ' | ')) AS details_erreur,
+	'Mauvaise traduction de présence/absence de reptiles dans les analyses' AS risques,
+	aire_etude,
+	NULLIF(CONCAT(d.prenom_role, ' ', d.nom_role), ' ') AS nom_digitiser,
+	d.email AS email_digitiser
+FROM taxon_pb
+LEFT JOIN utilisateurs.t_roles d ON (d.id_role = id_user)
+WHERE cd_nom = cd_ref
+)
+UNION
+(
+SELECT
+	'Taxon non à jour (cd_nom <> cd_ref)' AS type_erreur,
+	CONCAT('Taxon concerné (cd_nom) : ', cd_nom, '; Passages concernés : ', array_to_string(list_pb, ' | ')) AS details_erreur,
+	'Mauvaise traduction de présence/absence de reptiles dans les analyses' AS risques,
+	aire_etude,
+	NULLIF(CONCAT(d.prenom_role, ' ', d.nom_role), ' ') AS nom_digitiser,
+	d.email AS email_digitiser
+FROM taxon_pb
+LEFT JOIN utilisateurs.t_roles d ON (d.id_role = id_user)
+WHERE cd_nom <> cd_ref
+)
+UNION
+(
+SELECT
+	'Visite avec présence et absence reptile' AS type_erreur,
+	CONCAT('Passage concerné : ', array_to_string(details, ' | ')) AS details_erreur,
+	'Erreur de saisie : que conserver ?' AS risques,
+	aire_etude,
+	NULLIF(CONCAT(d.prenom_role, ' ', d.nom_role), ' ') AS nom_digitiser,
+	d.email AS email_digitiser
+FROM pb_visite_presence_absence
+LEFT JOIN utilisateurs.t_roles d ON (d.id_role = id_user)
+where abs_pres > 1
+))
+SELECT
+	'0.1' as version,
+	*
+FROM errors
+ORDER BY type_erreur, aire_etude;
