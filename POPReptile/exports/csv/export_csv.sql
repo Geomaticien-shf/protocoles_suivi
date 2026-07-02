@@ -54,8 +54,9 @@ WHERE row_num = 1),
 num_passages_calc AS
 (SELECT
     id_base_visit,
-    row_number() OVER (PARTITION BY id_base_site, date_part('year', visit_date_min) ORDER BY visit_date_min ASC) as num_passage_calc
+    row_number() OVER (PARTITION BY id_base_site, date_part('year', visit_date_min) ORDER BY visit_date_min ASC, (c.data->>'Heure_debut')) as num_passage_calc
 FROM gn_monitoring.t_base_visits
+LEFT JOIN gn_monitoring.t_visit_complements c USING (id_base_visit)
 )
 SELECT
     -- identifiant unique
@@ -197,8 +198,9 @@ WHERE row_num = 1),
 num_passages_calc AS
 (SELECT
     id_base_visit,
-    row_number() OVER (PARTITION BY id_base_site, date_part('year', visit_date_min) ORDER BY visit_date_min ASC) as num_passage_calc
+    row_number() OVER (PARTITION BY id_base_site, date_part('year', visit_date_min) ORDER BY visit_date_min ASC, (c.data->>'Heure_debut')) as num_passage_calc
 FROM gn_monitoring.t_base_visits
+LEFT JOIN gn_monitoring.t_visit_complements c USING (id_base_visit)
 )
 SELECT
     -- Aire et site
