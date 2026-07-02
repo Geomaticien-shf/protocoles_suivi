@@ -59,6 +59,8 @@ FROM gn_monitoring.t_base_visits
 LEFT JOIN gn_monitoring.t_visit_complements c USING (id_base_visit)
 )
 SELECT
+    -- Version de la vue pour pouvoir vérifier simplement si à jour
+    1 AS version,
     -- identifiant unique
     o.uuid_observation,
     -- Aire et variables associées (groupe de sites)
@@ -203,6 +205,8 @@ FROM gn_monitoring.t_base_visits
 LEFT JOIN gn_monitoring.t_visit_complements c USING (id_base_visit)
 )
 SELECT
+    -- Version de la vue pour pouvoir vérifier simplement si à jour
+    1 AS version,
     -- Aire et site
     REPLACE(trim(unaccent(tsg.sites_group_name)), ' ', '_') AS aire_etude, -- Uniformisation des noms
     tsg.uuid_sites_group AS uuid_aire_etude,
