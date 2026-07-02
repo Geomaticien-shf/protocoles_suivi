@@ -69,6 +69,7 @@ SELECT
     v.id_module as id_module,
     v.id_dataset,
     v.id_digitiser,
+    sc.id_sites_group,
     ref_nomenclatures.get_id_nomenclature('NAT_OBJ_GEO', 'In') AS id_nomenclature_geo_object_nature,
     ref_nomenclatures.get_id_nomenclature('TYP_GRP', 'PASS') AS id_nomenclature_grp_typ,
     -- La méthode d'observation dépend du passage
