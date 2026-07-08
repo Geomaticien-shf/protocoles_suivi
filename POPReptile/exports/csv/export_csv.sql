@@ -59,10 +59,10 @@ FROM gn_monitoring.t_base_visits
 LEFT JOIN gn_monitoring.t_visit_complements c USING (id_base_visit)
 )
 SELECT
+    -- identifiant unique : doit être en première position (cf issue #582 monitoring)
+    o.uuid_observation,
     -- Version de la vue pour pouvoir vérifier simplement si à jour
     1 AS version,
-    -- identifiant unique
-    o.uuid_observation,
     -- Aire et variables associées (groupe de sites)
     REPLACE(trim(unaccent(tsg.sites_group_name)), ' ', '_') AS aire_etude, -- Uniformisation des noms
     tsg.uuid_sites_group AS uuid_aire_etude,
@@ -205,6 +205,8 @@ FROM gn_monitoring.t_base_visits
 LEFT JOIN gn_monitoring.t_visit_complements c USING (id_base_visit)
 )
 SELECT
+    -- Doit être en premier, cf issue #582 (monitoring)
+    v.uuid_base_visit AS uuid_passage,
     -- Version de la vue pour pouvoir vérifier simplement si à jour
     1 AS version,
     -- Aire et site
@@ -228,7 +230,6 @@ SELECT
     -- Informations sur le passage (visite)
     v.id_dataset,
     d.dataset_name AS jeu_de_donnees,
-    v.uuid_base_visit AS uuid_passage,
     v.visit_date_min AS date_passage,
     date_part('year', v.visit_date_min) AS annee_passage,
     date_part('month', v.visit_date_min) AS mois_passage,
@@ -437,6 +438,7 @@ LEFT JOIN utilisateurs.t_roles d ON (d.id_role = id_user)
 where abs_pres > 1
 ))
 SELECT
+	row_number() OVER(order by type_erreur, aire_etude) as numero_ligne,
 	'0.1' as version,
 	*
 FROM errors
